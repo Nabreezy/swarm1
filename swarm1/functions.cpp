@@ -37,10 +37,14 @@ int f2(cParticle particle) {
 }
 
 int f3(cParticle particle) {
-  // for (int i = 0; i < MAX_INPUTS; i++) {
-  //   for (int j = 0; j < i; j++) {
+  int total = 0;
 
-  //   }
+  for (int i = 0; i < MAX_INPUTS; i++) {
+    for (int j = 0; j < i; j++) {
+      int x = particle.getData(i);
+      total += x;
+    }
+  }
   return 0;
 }
 
@@ -138,7 +142,8 @@ int f12(cParticle particle) {
 
   for (int i = 0; i < MAX_INPUTS - 1; i++) {
     int y = particle.getData(i);
-    sum1 += (y - 1) * (y - 1);
+    int y1 = particle.getData(i+1);
+    sum1 += ((y - 1) * (y - 1)) * (1 + 10 * pow(sin(M_PI * y1), 2));
   }
 
   for (int i = 0; i < MAX_INPUTS; i++) {
@@ -146,7 +151,64 @@ int f12(cParticle particle) {
     sum2 += u(x, 10, 100, 4);
   }
 
-  double total = 1;
+  int n = MAX_INPUTS;
+  int y1 = particle.getData(0);
+  int yn = particle.getData(MAX_INPUTS - 1);
+  double total = (M_PI/n) * (10*pow(sin(M_PI*y1), 2) + sum1 + pow(yn-1,2)) + sum2;
+  return (int)total;
+}
+
+int f13(cParticle particle) {
+  double sum1 = 0;
+  double sum2 = 0;
+
+  for (int i = 0; i < MAX_INPUTS; i++) {
+    int x = particle.getData(i);
+    sum1 += pow(x - 1, 2) * (1 + pow(sin(3*M_PI*x + 1), 2));
+    sum2 += u(x, 5, 100, 4);
+  }
+
+  int n = MAX_INPUTS;
+  int x1 = particle.getData(0);
+  int xn = particle.getData(MAX_INPUTS - 1);
+  double total = 0.1 * (pow(sin(3 * M_PI * x1), 2) + sum1 +
+                        pow(xn - 1, 2) * (1 + pow(sin(2 * M_PI * xn), 2))) +
+                 sum2;
+  return (int)total;
+}
+
+int f14(cParticle particle) {
+  int a[25][2];
+
+  double total = (1 / 500);
+  for (int j = 0; j < 25; j++) {
+    double t = 0;
+    for (int i = 0; i < 2; i++) {
+      int x = particle.getData(i);
+      t += pow(x - a[j][i],6);
+    }
+    total += 1/(j+t);
+  }
+
+  total = pow(total, -1);
+  return (int)total;
+}
+
+int f15(cParticle particle) {
+  int a[11];
+  int b[11];
+
+  double total = 0;
+  for (int i = 0; i < 11; i++) {
+      int x1 = particle.getData(0);
+      int x2 = particle.getData(1);
+      int x3 = particle.getData(2);
+      int x4 = particle.getData(3);
+      total += a[i] - (x1 * (pow(b[i], 2) + b[i] * x2)) /
+                          (pow(b[i], 2) + b[i] * x3 + x4);
+  }
+
+  total = pow(total, 2);
   return (int)total;
 }
 
