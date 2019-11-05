@@ -32,13 +32,16 @@ const int START_RANGE_MIN = 149;
 const int START_RANGE_MAX = 190;
 
 #include "cParticle.h"
+// #include "functions.h"
+
+
 
 int     main();
 void    psoAlgorithm();
 void    getVelocity(int gBestIndex);
 void    updateParticles(int gBestIndex);
 void    initialize();
-int     testProblem(int index);
+int 	testProblem(int index);
 float   gRand();
 int     getRandomNumber(int low, int high);
 int     minimum();

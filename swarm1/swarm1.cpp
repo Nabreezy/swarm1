@@ -2,8 +2,11 @@
 //
 
 #include "swarm1.h"
+#include "functions.h"
+
 
 cParticle particles[MAX_PARTICLES];
+int (*_testProblem)(cParticle particle) = f1;
 
 int main()
 {
@@ -151,16 +154,11 @@ void updateParticles(int gBestIndex)
 
 }
 
+
 int testProblem(int index)
 {
-	int total = 0;
-
-	for (int i = 0; i <= MAX_INPUTS - 1; i++)
-	{
-		total += particles[index].getData(i);
-	} // i
-
-	return total;
+	return _testProblem(particles[index]);
+    // return f1(particles[index]);
 }
 
 float gRand()
