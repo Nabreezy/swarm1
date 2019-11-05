@@ -36,14 +36,16 @@ int f2(cParticle particle) {
   return sum + prod;
 }
 
-int f3(cParticle particle) {
+int f3(cParticle particle) { //Schwefel's 2.21
   int total = 0;
 
   for (int i = 0; i < MAX_INPUTS; i++) {
+    int t = 0;
     for (int j = 0; j < i; j++) {
-      int x = particle.getData(i);
-      total += x;
+      int x = particle.getData(j);
+      t += x;
     }
+    total += t*t
   }
   return 0;
 }
