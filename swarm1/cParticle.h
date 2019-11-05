@@ -10,18 +10,22 @@ class cParticle
 {
 
 private:
-	int     mData[MAX_INPUTS];
-	int     mpBest;
-	float   mVelocity;
+	int     mX[DIMENTION];
+	int     mP[DIMENTION];
+	float   mV[DIMENTION];
 
 public:
 	cParticle();
-	int     getData(int index) const;
-	void    setData(int index, int value);
-	int     getpBest() const;
-	void    setpBest(int value);
-	float   getVelocity() const;
-	void    setVelocity(float value);
+    cParticle(const cParticle &particle);
+    int get_position(int index) const;
+    int* get_position() const;
+    void set_position(int index, int value);
+    int get_best_position(int index) const;
+    int* get_best_position() const;
+    void set_best_position(int index, int value);
+    float get_velocity(int index) const;
+    void set_velocity(int index, float value);
+    void update_position();
 
 }; // end cParticle class.
 

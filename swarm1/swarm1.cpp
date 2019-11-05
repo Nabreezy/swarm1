@@ -4,203 +4,117 @@
 #include "swarm1.h"
 #include "functions.h"
 
-
 cParticle particles[MAX_PARTICLES];
-int (*_testProblem)(cParticle particle) = f1;
+int (*f)(int x[DIMENTION]) = f2;
+// bool comp(int a, int b) { return a < b; } // minimum
+// bool comp(int a, int b) { return a > b; } // maximum
+bool comp(int a, int b) { return abs(TARGET - a) < abs(TARGET - b); } // point convergence
 
-int main()
-{
+int main() {
 	srand((unsigned)time(0));
-
 	psoAlgorithm();
-
 	return 0;
 }
 
-void psoAlgorithm()
-{
-	int gBest = 0;
+
+
+void psoAlgorithm() {
+	int *g = new int[DIMENTION];
 	int gBestTest = 0;
 	int epoch = 0;
 	bool done = false;
 
-	initialize();
+  	// init
 
-	do
-	{
-		/* Two conditions can end this loop:
-			  if the maximum number of epochs allowed has been reached, or,
-			  if the Target value has been found.
-		*/
-		if (epoch < MAX_EPOCHS) {
+	for (int d = 0; d < DIMENTION; d++) {
+        int x = g[d] = getRandomNumber(LOWER, UPPER);
+	}
 
-			for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-			{
-				for (int j = 0; j <= MAX_INPUTS - 1; j++)
-				{
-					if (j < MAX_INPUTS - 1) {
-						cout << particles[i].getData(j) << " + ";
-					}
-					else {
-						cout << particles[i].getData(j) << " = ";
-					}
-				} // j
+	for (int i = 0; i < MAX_PARTICLES; i++) {
+		for (int d = 0; d < DIMENTION; d++) {
+			int x = getRandomNumber(LOWER, UPPER);
+			particles[i].set_position(d, x);
+			particles[i].set_best_position(d, x);
+		}
 
-				cout << testProblem(i) << endl;
-				if (testProblem(i) == TARGET)
-				{
-					done = true;
+		if (comp(f(particles[i].get_position()), f(g))) {
+			g = particles[i].get_position();
+		}
+
+		for (int d = 0; d < DIMENTION; d++) {
+			int diff = abs(UPPER - LOWER);
+			int v = getRandomNumber(-diff, diff);
+			particles[i].set_velocity(d, (float)v);
+		}
+	}
+
+	cout << "init completed." << endl;
+	while (!done) {
+		cout << epoch << endl;
+		for (int i = 0; i < MAX_PARTICLES; i++) {
+			cout << "f(";
+			for (int d = 0; d < DIMENTION; d++) {
+				
+				if (d < DIMENTION - 1) {
+					cout << particles[i].get_position(d) << ", ";
+				} else {
+					cout << particles[i].get_position(d) << "\b) = ";
 				}
-			} // i
-
-			gBestTest = minimum();
-
-			//If any particle's pBest value is better than the gBest value,
-			//make it the new gBest Value.
-			if (abs(TARGET - testProblem(gBestTest)) < abs(TARGET - testProblem(gBest)))
-			{
-				gBest = gBestTest;
+			
 			}
+			cout << f(particles[i].get_position()) << endl;
+        }
 
-			getVelocity(gBest);
-
-			updateParticles(gBest);
-
-			epoch += 1;
-
+		if (epoch > MAX_EPOCHS) {
+			cout << epoch << " epochs completed." << endl;
+			break;
 		}
-		else {
-			done = true;
-		}
+		epoch += 1;
 
-	} while (!done);
-
-	cout << epoch << " epochs completed." << endl;
-
-	return;
-}
-
-void initialize()
-{
-	int total;
-
-	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-	{
-		total = 0;
-		for (int j = 0; j <= MAX_INPUTS - 1; j++)
-		{
-			particles[i].setData(j, getRandomNumber(START_RANGE_MIN, START_RANGE_MAX));
-			total += particles[i].getData(j);
-		} // j
-		particles[i].setpBest(total);
-	} // i
-
-	return;
-}
-
-void getVelocity(int gBestIndex)
-{
-	/* from Kennedy & Eberhart(1995).
-		vx[][] = vx[][] + 2 * rand() * (pbestx[][] - presentx[][]) +
-						  2 * rand() * (pbestx[][gbest] - presentx[][])
-	*/
-	int testResults, bestResults;
-	float vValue;
-
-	bestResults = testProblem(gBestIndex);
-
-	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-	{
-		testResults = testProblem(i);
-		vValue = particles[i].getVelocity() +
-			2 * gRand() * (particles[i].getpBest() - testResults) + 2 * gRand() *
-			(bestResults - testResults);
-
-		if (vValue > V_MAX) {
-			particles[i].setVelocity(V_MAX);
-		}
-		else if (vValue < -V_MAX) {
-			particles[i].setVelocity(-V_MAX);
-		}
-		else {
-			particles[i].setVelocity(vValue);
-		}
-	} // i
-}
-
-void updateParticles(int gBestIndex)
-{
-	int total, tempData;
-
-	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-	{
-		for (int j = 0; j <= MAX_INPUTS - 1; j++)
-		{
-			if (particles[i].getData(j) != particles[gBestIndex].getData(j))
-			{
-				tempData = particles[i].getData(j);
-				particles[i].setData(j, tempData + static_cast<int>(particles[i].getVelocity()));
+		for (int i = 0; i < MAX_PARTICLES; i++) {
+			for (int d = 0; d < DIMENTION; d++) {
+				int x = particles[i].get_position(d);
+				int p = particles[i].get_best_position(d);
+				float v = particles[i].get_velocity(d);
+				float rp = gRand(), rg = gRand();
+				float w1 = 1, w2 = 1, w3 = 1;
+				particles[i].set_velocity(
+					d, w1 * v + w2 * rp * (p - x) + w3 * rg * (g[d] - x));
 			}
-		} // j
+			particles[i].update_position();
 
-		//Check pBest value.
-		total = testProblem(i);
-		if (abs(TARGET - total) < particles[i].getpBest())
-		{
-			particles[i].setpBest(total);
+			if (comp(f(particles[i].get_position()), f(particles[i].get_best_position()))) {
+				for (int d = 0; d <= DIMENTION; d++) {
+					particles[i].set_best_position(d, particles[i].get_position(d));
+				}
+
+				if (comp(f(particles[i].get_best_position()), f(g))) {
+					g = particles[i].get_best_position();
+				}
+			}
 		}
 
-	} // i
+		
+	}
+
+    cout << "f(";
+    for (int d = 0; d < DIMENTION; d++) {
+    	if (d < DIMENTION - 1) {
+		cout << g[d] << ", ";
+		} else {
+		cout << g[d] << "\b) = ";
+		}
+	}
+	cout << f(g) << endl;
 
 }
 
-
-int testProblem(int index)
-{
-	return _testProblem(particles[index]);
-    // return f1(particles[index]);
-}
-
-float gRand()
-{
+float gRand() {
 	// Returns a pseudo-random float between 0.0 and 1.0
 	return float(rand() / (RAND_MAX + 1.0));
 }
 
-int getRandomNumber(int low, int high)
-{
+int getRandomNumber(int low, int high) {
 	// Returns a pseudo-random integer between low and high.
 	return low + int(((high - low) + 1) * rand() / (RAND_MAX + 1.0));
-}
-
-int minimum()
-{
-	//Returns an array index.
-	int winner = 0;
-	bool foundNewWinner;
-	bool done = false;
-
-	do
-	{
-		foundNewWinner = false;
-		for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-		{
-			if (i != winner) {             //Avoid self-comparison.
-				//The minimum has to be in relation to the Target.
-				if (abs(TARGET - testProblem(i)) < abs(TARGET - testProblem(winner)))
-				{
-					winner = i;
-					foundNewWinner = true;
-				}
-			}
-		} // i
-
-		if (foundNewWinner == false)
-		{
-			done = true;
-		}
-
-	} while (!done);
-
-	return winner;
 }

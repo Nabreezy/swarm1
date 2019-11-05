@@ -1,21 +1,21 @@
 #ifndef C_FUNCTIONS_H
 #define C_FUNCTIONS_H
 #include "swarm1.h"
-int test(cParticle particle);
-int f1(cParticle particle); // Sphere
-int f2(cParticle particle); // Schwefel's 2.22
-int f3(cParticle particle); // Schwefel's 1.20
-int f4(cParticle particle); // Schwefel's 2.21
-int f5(cParticle particle); // Rosenbrock
-int f6(cParticle particle); // Step
-int f7(cParticle particle); // Quartic Noise
-int f8(cParticle particle);
-int f9(cParticle particle);
-int f10(cParticle particle); // Ackley
-int f11(cParticle particle); // look's like Griewank
-int f12(cParticle particle);
-int f13(cParticle particle);
-int f14(cParticle particle); // a not define
-int f15(cParticle particle); // a, b not define
+int test(int X[DIMENTION]);
+int f1(int X[DIMENTION]);    // Sphere
+int f2(int X[DIMENTION]);    // Schwefel's 2.22
+int f3(int X[DIMENTION]); // Schwefel's 1.20
+int f4(int X[DIMENTION]); // Schwefel's 2.21
+int f5(int X[DIMENTION]); // Rosenbrock
+int f6(int X[DIMENTION]); // Step
+int f7(int X[DIMENTION]); // Quartic Noise
+int f8(int X[DIMENTION]);
+int f9(int X[DIMENTION]);
+int f10(int X[DIMENTION]); // Ackley
+int f11(int X[DIMENTION]); // look's like Griewank
+int f12(int X[DIMENTION]);
+int f13(int X[DIMENTION]);
+int f14(int X[DIMENTION]); // a not define
+int f15(int X[DIMENTION]); // a, b not define
 int u(int x, int a, int k, int m);
 #endif
